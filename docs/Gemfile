@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+
+gem "jekyll", "~> 4.3.2" # installed by `gem jekyll`
+
+gem "just-the-docs", "0.5.3" # pinned to the current release
+
+gem "liquid", "~> 4.0" # installed by `gem jekyll
