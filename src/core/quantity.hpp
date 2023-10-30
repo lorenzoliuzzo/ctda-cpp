@@ -16,7 +16,7 @@ namespace ctda {
     /// @brief This template meta-struct contains a physical quantity an union of a value and a 'unit'.
     /// @tparam The value stored in the quantity.
     /// @tparam The unit of the quantity.
-    template <typename VALUE_T, typename UNIT_T = units::dimensionless>
+    template <typename VALUE_T, typename UNIT_T = unit<dimensionless>>
         requires (is_unit_v<UNIT_T>)
     struct quantity {
 

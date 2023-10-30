@@ -27,4 +27,7 @@ namespace ctda {
     static constexpr std::array<std::string_view, 7> base_unit_literals = {"m", "s", "kg", "K", "A", "mol", "cd"};                               
 
 
+    using dimensionless = base_quantity<0, 0, 0, 0, 0, 0, 0>;
+
+
 } // namespace ctda

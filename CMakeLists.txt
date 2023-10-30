@@ -47,6 +47,5 @@ install(
         ${PROJECT_SOURCE_DIR}/src/math/algebraic/negate.hpp
         ${PROJECT_SOURCE_DIR}/src/math/algebraic/invert.hpp 
 
-
     DESTINATION include/ctda/math/algebraic
 )

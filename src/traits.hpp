@@ -81,8 +81,8 @@ namespace ctda {
     template <typename T>
     struct is_quantity : std::false_type {};
 
-    template <typename VALUE_T, typename UNIT_T>
-    struct is_quantity<quantity<VALUE_T, UNIT_T>> : std::true_type {};
+    template <typename value_t, typename unit_t>
+    struct is_quantity<quantity<value_t, unit_t>> : std::true_type {};
 
     template <typename T>
     inline constexpr bool is_quantity_v = is_quantity<T>::value;
@@ -90,7 +90,36 @@ namespace ctda {
     template <typename... Ts>
     inline constexpr bool are_quantity_v = std::conjunction_v<is_quantity<Ts>...>;
 
+    template <typename T1, typename T2> 
+    struct are_same_quantity : std::false_type {};
 
+    template <typename T1, typename T2> 
+        requires (are_quantity_v<T1, T2>)
+    struct are_same_quantity<T1, T2> : std::is_same<typename T1::base_t, typename T2::base_t> {};
+    
+    template <typename T1, typename T2, typename... Ts>
+    inline constexpr bool are_same_quantity_v = std::conjunction_v<are_same_quantity<T1, T2>, are_same_quantity<T1, Ts>...>;
+
+
+    template <typename quantity_t>
+        requires (is_quantity_v<quantity_t>)
+    struct measurement;
+
+    /// @brief This template meta-struct checks if a type is a quantity.
+    template <typename T>
+    struct is_measurement : std::false_type {};
+
+    template <typename T>
+    struct is_measurement<measurement<T>> : std::true_type {};
+
+    template <typename T>
+    inline constexpr bool is_measurement_v = is_measurement<T>::value;
+
+    template <typename... Ts>
+    inline constexpr bool are_measurement_v = std::conjunction_v<is_measurement<Ts>...>;
+
+
+    /// @brief This template meta-struct checks if a type is a complex number.
     template <typename T>
     struct is_complex : std::false_type {};
 

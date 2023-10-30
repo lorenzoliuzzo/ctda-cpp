@@ -28,24 +28,24 @@ namespace ctda {
         using radian        = unit<basis::dimensionless>;
         using steradian     = unit<basis::dimensionless>;
 
-        // inline static constexpr auto newton = kilogram * meter / (second * second);
-        // inline static constexpr auto joule = newton * meter;
-        // inline static constexpr auto watt = joule / second;
-        // inline static constexpr auto pascal = newton / (meter * meter);
-        // inline static constexpr auto hertz = 1 / second;
-        // inline static constexpr auto coulomb = ampere * second;
-        // inline static constexpr auto volt = watt / ampere;
-        // inline static constexpr auto ohm = volt / ampere;
-        // inline static constexpr auto farad = coulomb / volt;
-        // inline static constexpr auto weber = volt * second;
-        // inline static constexpr auto tesla = weber / (meter * meter);
-        // inline static constexpr auto henry = weber / ampere;
-        // inline static constexpr auto siemens = 1 / ohm;
-        // inline static constexpr auto lux = candela / (meter * meter);
-        // inline static constexpr auto becquerel = 1 / second;
-        // inline static constexpr auto gray = joule / kilogram;
-        // inline static constexpr auto sievert = joule / kilogram;
-        // inline static constexpr auto katal = mole / second;
+        // using newton = kilogram * meter / (second * second);
+        // using joule = newton * meter;
+        // using watt = joule / second;
+        // using pascal = newton / (meter * meter);
+        // using hertz = 1 / second;
+        // using coulomb = ampere * second;
+        // using volt = watt / ampere;
+        // using ohm = volt / ampere;
+        // using farad = coulomb / volt;
+        // using weber = volt * second;
+        // using tesla = weber / (meter * meter);
+        // using henry = weber / ampere;
+        // using siemens = 1 / ohm;
+        // using lux = candela / (meter * meter);
+        // using becquerel = 1 / second;
+        // using gray = joule / kilogram;
+        // using sievert = joule / kilogram;
+        // using katal = mole / second;
 
 
     } // namespace units

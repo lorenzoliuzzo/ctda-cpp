@@ -25,14 +25,9 @@
 #include "traits.hpp"
 
 #include "core/base_quantity.hpp"
-#include "basis.hpp"
-
 #include "core/unit.hpp"
-#include "units.hpp" 
-
 #include "core/quantity.hpp"
-
-#include "io.hpp"
+#include "core/measurement.hpp"
 
 #include "math/operations.hpp"
 #include "math/operators.hpp"
@@ -41,3 +36,10 @@
 #include "math/algebraic/negate.hpp"
 #include "math/algebraic/invert.hpp"
 #include "math/algebraic/power.hpp"
+#include "math/algebraic/root.hpp"
+
+#include "basis.hpp"
+#include "units.hpp" 
+
+#include "io.hpp"
+

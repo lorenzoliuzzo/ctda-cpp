@@ -175,22 +175,24 @@ namespace ctda {
 
         }
 
+        template <int POWER, typename T>
+        struct root_impl; 
 
-        // template <typename POWER, typename T>
-        // using root_t = power_t<POWER, invert_t<T>>;
+        template <int POWER, typename T>
+        using root_t = typename root_impl<POWER, T>::result_t;
 
-        // template <typename POWER, typename T>
-        // inline static constexpr auto root(const T& x) {
+        template <int POWER, typename T>
+        inline static constexpr auto root(const T& x) {
             
-        //     return power_impl<inv(POWER), T>::f(x);
+            return root_impl<POWER, T>::f(x);
 
-        // }
+        }
 
-        // inline static constexpr auto sqrt(const auto& x) {
+        inline static constexpr auto sqrt(const auto& x) {
             
-        //     return pow<0.5>(x); 
+            return root<2>(x); 
 
-        // }
+        }
 
         // inline static constexpr auto cbrt(const auto& x) {
             

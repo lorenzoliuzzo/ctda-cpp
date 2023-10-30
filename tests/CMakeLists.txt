@@ -13,6 +13,11 @@ target_link_libraries(
 )
 
 add_executable(
+  measurement
+  measurement.cpp
+)
+
+add_executable(
   math
   math.cpp
 )

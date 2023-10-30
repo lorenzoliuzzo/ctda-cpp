@@ -179,4 +179,27 @@ namespace std {
     }
 
 
+    /// @brief Get a string representation of the measurement.
+    template <typename T>
+        requires (ctda::is_measurement_v<T>)
+    constexpr string to_string(const T& m) noexcept {
+
+        return to_string(m.value()) + " +- " + to_string(m.uncertainty());
+
+    }
+
+
 } // namespace std
+
+
+namespace ctda {
+
+    template <typename T>
+        requires (is_quantity_v<T> || is_measurement_v<T>)
+    constexpr std::ostream& operator<<(std::ostream& os, T x) noexcept {
+
+        return os << std::to_string(x);
+
+    }
+
+}

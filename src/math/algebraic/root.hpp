@@ -1,34 +1,36 @@
 /**
- * @file    math/operations/algebraic/root.hpp
+ * @file    math/algebraic/root.hpp
  * @author  Lorenzo Liuzzo (lorenzoliuzzo@outlook.com)
- * @brief   
- * @date    2023-06-12
+ * @brief   This file contains the implementation of the root struct.
+ * @date    2023-10-30
  * 
  * @copyright Copyright (c) 2023
  */
 
+#pragma once
 
 
-namespace scipp::math {
+namespace ctda {
 
 
-    namespace op {
+    namespace math {
 
 
-        /// @brief power a physics::base_quantity
-        template <int POWER, typename BASE_TYPE>
-            requires (physics::is_base_v<BASE_TYPE>)
-        struct root_impl<POWER, BASE_TYPE> {
 
-            using result_t = physics::base_quantity<BASE_TYPE::length / POWER, 
-                                                    BASE_TYPE::time / POWER,
-                                                    BASE_TYPE::mass / POWER,
-                                                    BASE_TYPE::temperature / POWER,
-                                                    BASE_TYPE::elettric_current / POWER,
-                                                    BASE_TYPE::substance_amount / POWER,
-                                                    BASE_TYPE::luminous_intensity / POWER>;
+        /// @brief Return the power of a base_quantity
+        template <int POWER, typename BASE_T>
+            requires (is_base_v<BASE_T>)
+        struct root_impl<POWER, BASE_T> {
 
-            static constexpr result_t f(const BASE_TYPE&) noexcept {
+            using result_t = base_quantity<BASE_T::powers[0] / POWER, 
+                                           BASE_T::powers[1] / POWER,
+                                           BASE_T::powers[2] / POWER,
+                                           BASE_T::powers[3] / POWER,
+                                           BASE_T::powers[4] / POWER,
+                                           BASE_T::powers[5] / POWER,
+                                           BASE_T::powers[6] / POWER>;
+
+            inline static constexpr result_t f(const BASE_T&) noexcept {
 
                 return {};
 
@@ -37,16 +39,15 @@ namespace scipp::math {
         };
 
 
-        /// @brief power a prefix
-        template <int POWER, typename PREFIX_TYPE>
-            requires (physics::is_prefix_v<PREFIX_TYPE>)
-        struct root_impl<POWER, PREFIX_TYPE> {
+        /// @brief Return the power of a prefix
+        template <int POWER, typename PREFIX_T>
+            requires (is_prefix_v<PREFIX_T>)
+        struct root_impl<POWER, PREFIX_T> {
             
-            using result_t = std::ratio<static_cast<int>(std::pow(PREFIX_TYPE::num, 1.0 / POWER)), 
-                                        static_cast<int>(std::pow(PREFIX_TYPE::den, 1.0 / POWER))>; 
+            using result_t = std::ratio<static_cast<size_t>(std::pow(PREFIX_T::num, inv(POWER))), 
+                                        static_cast<size_t>(std::pow(PREFIX_T::den, inv(POWER)))>;
 
-
-            static constexpr result_t f(const PREFIX_TYPE&) noexcept {
+            inline static constexpr result_t f(const PREFIX_T&) noexcept {
 
                 return {};
 
@@ -55,52 +56,91 @@ namespace scipp::math {
         };
 
 
-        /// @brief power an unit of measurement
-        template <int POWER, typename UNIT_TYPE>
-            requires (physics::is_unit_v<UNIT_TYPE>)
-        struct root_impl<POWER, UNIT_TYPE> {
+        /// @brief Return the power of an unit
+        template <int POWER, typename UNIT_T>
+            requires (is_unit_v<UNIT_T>)
+        struct root_impl<POWER, UNIT_T> {
+            
+            using result_t = unit<root_t<POWER, typename UNIT_T::base_t>, 
+                                  root_t<POWER, typename UNIT_T::prefix_t>>;
 
-            using result_t = physics::unit<root_t<POWER, typename UNIT_TYPE::base_t>, root_t<POWER, typename UNIT_TYPE::prefix_t>>;                                             
-
-            static constexpr result_t f(const UNIT_TYPE&) noexcept {
+            inline static constexpr result_t f(const UNIT_T&) noexcept {
 
                 return {};
 
-            }    
+            }       
 
         };
 
 
-        /// @brief power a number
+        /// @brief Return the power of a number
         template <int POWER, typename T>
-            requires is_number_v<T>
+            requires (std::is_arithmetic_v<T>)
         struct root_impl<POWER, T> {
-
+            
             using result_t = T;
 
-            static constexpr result_t f(const T& x) noexcept {
+            inline static constexpr result_t f(const T& x) noexcept {
 
-                return std::pow(x, 1.0 / POWER);
+                return std::pow(x, inv(POWER));
+
+            }       
+
+        };
+
+
+        /// @brief Return the power of an array
+        template <int POWER, typename T, size_t N>
+        struct root_impl<POWER, std::array<T, N>> {
+            
+            using result_t = std::array<root_t<POWER, T>, N>;
+
+            static constexpr result_t f(const std::array<T, N>& x) noexcept {
+
+                result_t result{};
+                for (size_t i = 0; i < N; ++i) 
+                    result[i] = root<POWER>(x[i]);
+                return result;
 
             }       
 
         };
 
 
-        /// @brief power a measurement
-        template <int POWER, typename MEAS_TYPE>
-            requires physics::is_measurement_v<MEAS_TYPE>
-        struct root_impl<POWER, MEAS_TYPE> {
+        /// @brief Return the power of a vector
+        template <int POWER, typename T>
+        struct root_impl<POWER, std::vector<T>> {
+            
+            using result_t = std::vector<root_t<POWER, T>>;
 
-            using result_t = physics::measurement<root_t<POWER, typename MEAS_TYPE::base_t>, typename MEAS_TYPE::value_t>;                                             
+            static constexpr result_t f(const std::vector<T>& x) noexcept {
 
-            static constexpr result_t f(const MEAS_TYPE& x) noexcept {
-
-                return std::pow(x.value, 1.0 / POWER);
+                result_t result(x.size());
+                for (size_t i = 0; i < x.size(); ++i) 
+                    result[i] = root<POWER>(x[i]);
+                return result;
 
             }       
 
         };
+
+
+        /// @brief Return the power of a quantity
+        template <int POWER, typename T>
+            requires (is_quantity_v<T>)
+        struct root_impl<POWER, T> {
+            
+            using result_t = quantity<root_t<POWER, typename T::value_t>, 
+                                      root_t<POWER, typename T::unit_t>>;
+
+            inline static constexpr result_t f(const T& x) noexcept {
+
+                return root<POWER>(x.value);
+
+            }       
+
+        };
+
 
 
         // /// @brief power a umeasurement
@@ -151,50 +191,50 @@ namespace scipp::math {
         // };
 
 
-        /// @brief power a vector
-        template <int POWER, typename VECTOR_TYPE>
-            requires (geometry::is_vector_v<VECTOR_TYPE>)
-        struct root_impl<POWER, VECTOR_TYPE> {
+        // /// @brief power a vector
+        // template <int POWER, typename VECTOR_TYPE>
+        //     requires (geometry::is_vector_v<VECTOR_TYPE>)
+        // struct root_impl<POWER, VECTOR_TYPE> {
 
-            using result_t = geometry::vector<root_t<POWER, typename VECTOR_TYPE::value_t>, VECTOR_TYPE::dim, VECTOR_TYPE::flag>; 
+        //     using result_t = geometry::vector<root_t<POWER, typename VECTOR_TYPE::value_t>, VECTOR_TYPE::dim, VECTOR_TYPE::flag>; 
 
-            static constexpr result_t f(const VECTOR_TYPE& x) {
+        //     static constexpr result_t f(const VECTOR_TYPE& x) {
 
-                result_t x_pow;
-                std::transform(std::execution::par, x.data.begin(), x.data.end(), x_pow.data.begin(), [](const auto& x_i) { return op::pow<POWER>(x_i); });
-                return x_pow;
+        //         result_t x_pow;
+        //         std::transform(std::execution::par, x.data.begin(), x.data.end(), x_pow.data.begin(), [](const auto& x_i) { return op::pow<POWER>(x_i); });
+        //         return x_pow;
 
-            }
+        //     }
         
-        };
+        // };
 
 
-        template <int N, typename T>
-        struct root_impl<N, calculus::expr_ptr<T>> {
+        // template <int N, typename T>
+        // struct root_impl<N, calculus::expr_ptr<T>> {
 
-            using result_t = calculus::expr_ptr<op::root_t<N, T>>;
+        //     using result_t = calculus::expr_ptr<op::root_t<N, T>>;
 
-            static constexpr result_t f(const calculus::expr_ptr<T>& x) {
+        //     static constexpr result_t f(const calculus::expr_ptr<T>& x) {
 
-                return std::make_shared<calculus::root_expr<N, T>>(op::root<N>(x->val), x);
+        //         return std::make_shared<calculus::root_expr<N, T>>(op::root<N>(x->val), x);
 
-            }
+        //     }
 
-        };
+        // };
 
 
-        template <int N, typename T>
-        struct root_impl<N, calculus::variable<T>> {
+        // template <int N, typename T>
+        // struct root_impl<N, calculus::variable<T>> {
 
-            using result_t = calculus::expr_ptr<op::root_t<N, T>>;
+        //     using result_t = calculus::expr_ptr<op::root_t<N, T>>;
 
-            static constexpr result_t f(const calculus::variable<T>& x) {
+        //     static constexpr result_t f(const calculus::variable<T>& x) {
 
-                return op::root<N>(x.expr); 
+        //         return op::root<N>(x.expr); 
 
-            }
+        //     }
 
-        };
+        // };
 
 
     } // namespace functions
